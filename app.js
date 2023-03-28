@@ -207,5 +207,5 @@ function subscribeToGamePlayedEvents() {
 async function init() {
   // ...
   getGameHistory();
-  subscribeToGamePlayedEvents(); // Добавьте эту строку
+  subscribeToGamePlayedEvents();
 }
