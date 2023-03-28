@@ -175,3 +175,28 @@ function displayGameHistory(move, result, botChoice, timestamp) {
     
     gameHistoryList.appendChild(listItem);
 }
+
+function subscribeToGamePlayedEvents() {
+  contract.events.GamePlayed(
+      {
+          filter: { player: account },
+          fromBlock: 'latest'
+      },
+      (error, event) => {
+          if (error) {
+              console.error('Error while subscribing to GamePlayed events:', error);
+          } else {
+              const { move, won, botChoice } = event.returnValues;
+              const timestamp = new Date().getTime() / 1000;
+              const result = won ? 'Won' : (move === botChoice ? 'Draw' : 'Lost');
+              displayGameHistory(move, result, botChoice, timestamp);
+          }
+      }
+  );
+}
+
+async function init() {
+  // ...
+  getGameHistory();
+  subscribeToGamePlayedEvents(); // Добавьте эту строку
+}
