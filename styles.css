@@ -90,3 +90,7 @@ button:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
 }
+
+#gameHistoryList li.draw {
+    color: #ff9800;
+}

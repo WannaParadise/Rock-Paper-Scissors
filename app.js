@@ -130,7 +130,18 @@ async function getGameHistory() {
         const { move, won, botChoice } = event.returnValues;
         const block = await web3.eth.getBlock(event.blockNumber);
         const timestamp = block.timestamp;
-        displayGameHistory(move, won, botChoice, timestamp);
+
+        // Определение результата игры
+        let result;
+        if (won) {
+            result = 'Won';
+        } else if (move === botChoice) {
+            result = 'Draw';
+        } else {
+            result = 'Lost';
+        }
+
+        displayGameHistory(move, result, botChoice, timestamp);
     }
 }
 
@@ -145,13 +156,22 @@ async function makeMove(move) {
 }
 
 
-function displayGameHistory(move, won, botChoice, timestamp) {
+function displayGameHistory(move, result, botChoice, timestamp) {
     const gameHistoryList = document.getElementById('gameHistoryList');
     const listItem = document.createElement('li');
     const moves = ['Rock', 'Paper', 'Scissors'];
     const date = new Date(timestamp * 1000).toLocaleString();
 
-    listItem.textContent = `You: ${moves[move]}, Computer: ${moves[botChoice]}, Result: ${won ? 'Won' : 'Lost'} (${date})`;
-    listItem.classList.add(won ? 'won' : 'lost');
+    listItem.textContent = `You: ${moves[move]}, Computer: ${moves[botChoice]}, Result: ${result} (${date})`;
+
+    // Добавление классов для разных результатов игры
+    if (result === 'Won') {
+        listItem.classList.add('won');
+    } else if (result === 'Lost') {
+        listItem.classList.add('lost');
+    } else {
+        listItem.classList.add('draw');
+    }
+    
     gameHistoryList.appendChild(listItem);
 }
