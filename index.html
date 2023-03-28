@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Rock Paper Scissors</h1>
+        <div class="buttons">
+            <img src="img/rock.png" alt="Rock" onclick="makeMove(0)" />
+            <img src="img/paper.png" alt="Paper" onclick="makeMove(1)" />
+            <img src="img/scissors.png" alt="Scissors" onclick="makeMove(2)" />
+        </div>
+        <div id="gameHistory">
+            <h2>Game History</h2>
+            <ul id="gameHistoryList"></ul>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
