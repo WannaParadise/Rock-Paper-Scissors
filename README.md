@@ -7,6 +7,7 @@ Node.js
 Truffle
 Ganache
 Metamask
+Или Visual Studio Server( что намного проще) 
 
 # Установка и настройка
 1. Клонируйте репозиторий:
