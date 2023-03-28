@@ -117,32 +117,42 @@ window.addEventListener("load", async () => {
 });
 
 async function getGameHistory() {
-    const pastEvents = await contract.getPastEvents('GamePlayed', {
-        filter: { player: account },
-        fromBlock: 0,
-        toBlock: 'latest'
+  const currentBlock = await web3.eth.getBlockNumber();
+  const maxBlockRange = 5000;
+
+  let fromBlock = Math.max(currentBlock - maxBlockRange, 0);
+  let toBlock = currentBlock;
+
+  const gameHistoryList = document.getElementById("gameHistoryList");
+  gameHistoryList.innerHTML = "";
+
+  while (fromBlock <= toBlock) {
+    const pastEvents = await contract.getPastEvents("GamePlayed", {
+      filter: { player: account },
+      fromBlock: fromBlock,
+      toBlock: toBlock,
     });
 
-    const gameHistoryList = document.getElementById('gameHistoryList');
-    gameHistoryList.innerHTML = '';
-
     for (const event of pastEvents) {
-        const { move, won, botChoice } = event.returnValues;
-        const block = await web3.eth.getBlock(event.blockNumber);
-        const timestamp = block.timestamp;
+      const { move, won, botChoice } = event.returnValues;
+      const block = await web3.eth.getBlock(event.blockNumber);
+      const timestamp = block.timestamp;
 
-        // Определение результата игры
-        let result;
-        if (won) {
-            result = 'Won';
-        } else if (move === botChoice) {
-            result = 'Draw';
-        } else {
-            result = 'Lost';
-        }
+      let result;
+      if (won) {
+        result = "Won";
+      } else if (move === botChoice) {
+        result = "Draw";
+      } else {
+        result = "Lost";
+      }
 
-        displayGameHistory(move, result, botChoice, timestamp);
+      displayGameHistory(move, result, botChoice, timestamp);
     }
+
+    toBlock = fromBlock - 1;
+    fromBlock = Math.max(fromBlock - maxBlockRange, 0);
+  }
 }
 
 async function makeMove(move) {
@@ -155,43 +165,42 @@ async function makeMove(move) {
   }
 }
 
-
 function displayGameHistory(move, result, botChoice, timestamp) {
-    const gameHistoryList = document.getElementById('gameHistoryList');
-    const listItem = document.createElement('li');
-    const moves = ['Rock', 'Paper', 'Scissors'];
-    const date = new Date(timestamp * 1000).toLocaleString();
+  const gameHistoryList = document.getElementById("gameHistoryList");
+  const listItem = document.createElement("li");
+  const moves = ["Rock", "Paper", "Scissors"];
+  const date = new Date(timestamp * 1000).toLocaleString();
 
-    listItem.textContent = `You: ${moves[move]}, Computer: ${moves[botChoice]}, Result: ${result} (${date})`;
+  listItem.textContent = `You: ${moves[move]}, Computer: ${moves[botChoice]}, Result: ${result} (${date})`;
 
-    // Добавление классов для разных результатов игры
-    if (result === 'Won') {
-        listItem.classList.add('won');
-    } else if (result === 'Lost') {
-        listItem.classList.add('lost');
-    } else {
-        listItem.classList.add('draw');
-    }
-    
-    gameHistoryList.appendChild(listItem);
+  // Добавление классов для разных результатов игры
+  if (result === "Won") {
+    listItem.classList.add("won");
+  } else if (result === "Lost") {
+    listItem.classList.add("lost");
+  } else {
+    listItem.classList.add("draw");
+  }
+
+  gameHistoryList.appendChild(listItem);
 }
 
 function subscribeToGamePlayedEvents() {
   contract.events.GamePlayed(
-      {
-          filter: { player: account },
-          fromBlock: 'latest'
-      },
-      (error, event) => {
-          if (error) {
-              console.error('Error while subscribing to GamePlayed events:', error);
-          } else {
-              const { move, won, botChoice } = event.returnValues;
-              const timestamp = new Date().getTime() / 1000;
-              const result = won ? 'Won' : (move === botChoice ? 'Draw' : 'Lost');
-              displayGameHistory(move, result, botChoice, timestamp);
-          }
+    {
+      filter: { player: account },
+      fromBlock: "latest",
+    },
+    (error, event) => {
+      if (error) {
+        console.error("Error while subscribing to GamePlayed events:", error);
+      } else {
+        const { move, won, botChoice } = event.returnValues;
+        const timestamp = new Date().getTime() / 1000;
+        const result = won ? "Won" : move === botChoice ? "Draw" : "Lost";
+        displayGameHistory(move, result, botChoice, timestamp);
       }
+    }
   );
 }
 
